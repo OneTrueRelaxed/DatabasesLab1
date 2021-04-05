@@ -13,8 +13,6 @@ load_dotenv()
 conn = None
 cursor = None
 
-zno_files_inserted = {2019: False, 2020: False}
-
 logging.basicConfig(
     filename="logs.log",
     filemode="a",
@@ -26,51 +24,31 @@ logging.basicConfig(
 def get_env_var(name):
     return os.environ.get(name)
 
-def handle_operational(func):
-    def wrapper(times=0):
-        if times < 60:
-            try:
-                func()
-            except psycopg2.OperationalError:
-                times += 1
-                logging.info(f"Trying to reconnect to database. Try: {times}")
-                time.sleep(0.5)
-                wrapper(times)
-
-    return wrapper
-
-def reconnect_after_connection_loss(func):
-    def wrapper(*args, **kwargs):
-        try:
-            func(*args, **kwargs)
-        except psycopg2.errors.AdminShutdown:
-            global conn, cursor
-
-            cursor.close()
-            cursor = None
-
-            conn.close()
-            conn = None
-
-            do_the_lab()
-
-    return wrapper
-
 def do_the_lab():
     establish_connection()
     create_cursor()
 
     start = datetime.now()
 
-    create_table()
+    create_tables()
+
+    insert_breakpoint()
+
+    create_inserted()
+
+    cursor.execute("SELECT inserted FROM inserted WHERE year=2019;")
+    inserted2019 = cursor.fetchone()[0]
+
+    cursor.execute("SELECT inserted FROM inserted WHERE year=2020;")
+    inserted2020 = cursor.fetchone()[0]
+
     logging.info("Start populating the database")
 
-
-    if zno_files_inserted[2019] == False:
+    if inserted2019 != True:
         zno2019 = get_env_var("zno2019")
         populate_table(zno2019, 2019)
-        
-    if zno_files_inserted[2020] == False:
+
+    if inserted2020 != True:     
         zno2020 = get_env_var("zno2020")
         populate_table(zno2020, 2020)
 
@@ -78,12 +56,11 @@ def do_the_lab():
     end = datetime.now()
     logging.info(f"Time for executing is : {end - start}\n")
 
-    make_query()
+    #make_query()
 
     cursor.close()
     conn.close()
 
-@handle_operational
 def establish_connection():
     global conn
     conn = psycopg2.connect(
@@ -111,7 +88,7 @@ def test_connection():
     cursor.execute(query, ('test'))
     print(cursor.fetchall())
 
-def create_table():
+def create_tables():
     table_name = get_env_var("table")
 
     global conn, cursor
@@ -119,7 +96,7 @@ def create_table():
     query=f"""
         CREATE TABLE IF NOT EXISTS {table_name} (
             OUTID VARCHAR, 
-            Birth VARCHAR, 
+            Birth INT, 
             SEXTYPENAME VARCHAR, 
             REGNAME VARCHAR, 
             AREANAME VARCHAR, 
@@ -136,9 +113,9 @@ def create_table():
             EOParent VARCHAR, 
             UkrTest VARCHAR, 
             UkrTestStatus VARCHAR, 
-            UkrBall100 VARCHAR, 
-            UkrBall12 VARCHAR, 
-            UkrBall VARCHAR, 
+            UkrBall100 FLOAT, 
+            UkrBall12 INT, 
+            UkrBall INT, 
             UkrAdaptScale VARCHAR, 
             UkrPTName VARCHAR, 
             UkrPTRegName VARCHAR, 
@@ -147,9 +124,9 @@ def create_table():
             histTest VARCHAR, 
             HistLang VARCHAR, 
             histTestStatus VARCHAR, 
-            histBall100 VARCHAR, 
-            histBall12 VARCHAR, 
-            histBall VARCHAR, 
+            histBall100 FLOAT, 
+            histBall12 INT, 
+            histBall INT, 
             histPTName VARCHAR, 
             histPTRegName VARCHAR, 
             histPTAreaName VARCHAR, 
@@ -157,9 +134,9 @@ def create_table():
             mathTest VARCHAR, 
             mathLang VARCHAR, 
             mathTestStatus VARCHAR, 
-            mathBall100 REAL, 
-            mathBall12 VARCHAR, 
-            mathBall VARCHAR, 
+            mathBall100 FLOAT, 
+            mathBall12 INT, 
+            mathBall INT, 
             mathPTName VARCHAR, 
             mathPTRegName VARCHAR, 
             mathPTAreaName VARCHAR, 
@@ -167,9 +144,9 @@ def create_table():
             physTest VARCHAR, 
             physLang VARCHAR, 
             physTestStatus VARCHAR, 
-            physBall100 VARCHAR, 
-            physBall12 VARCHAR, 
-            physBall VARCHAR, 
+            physBall100 FLOAT, 
+            physBall12 INT, 
+            physBall INT, 
             physPTName VARCHAR, 
             physPTRegName VARCHAR, 
             physPTAreaName VARCHAR, 
@@ -177,9 +154,9 @@ def create_table():
             chemTest VARCHAR, 
             chemLang VARCHAR, 
             chemTestStatus VARCHAR, 
-            chemBall100 VARCHAR, 
-            chemBall12 VARCHAR, 
-            chemBall VARCHAR, 
+            chemBall100 FLOAT, 
+            chemBall12 INT, 
+            chemBall INT, 
             chemPTName VARCHAR, 
             chemPTRegName VARCHAR, 
             chemPTAreaName VARCHAR, 
@@ -187,9 +164,9 @@ def create_table():
             bioTest VARCHAR, 
             bioLang VARCHAR, 
             bioTestStatus VARCHAR, 
-            bioBall100 VARCHAR, 
-            bioBall12 VARCHAR, 
-            bioBall VARCHAR, 
+            bioBall100 FLOAT, 
+            bioBall12 INT, 
+            bioBall INT, 
             bioPTName VARCHAR, 
             bioPTRegName VARCHAR, 
             bioPTAreaName VARCHAR, 
@@ -197,17 +174,17 @@ def create_table():
             geoTest VARCHAR, 
             geoLang VARCHAR, 
             geoTestStatus VARCHAR, 
-            geoBall100 VARCHAR, 
-            geoBall12 VARCHAR, 
-            geoBall VARCHAR, 
+            geoBall100 FLOAT, 
+            geoBall12 INT, 
+            geoBall INT, 
             geoPTName VARCHAR, 
             geoPTRegName VARCHAR, 
             geoPTAreaName VARCHAR, 
             geoPTTerName VARCHAR, 
             engTest VARCHAR, 
             engTestStatus VARCHAR, 
-            engBall100 VARCHAR, 
-            engBall12 VARCHAR, 
+            engBall100 FLOAT, 
+            engBall12 INT, 
             engDPALevel VARCHAR, 
             engBall VARCHAR, 
             engPTName VARCHAR, 
@@ -216,8 +193,8 @@ def create_table():
             engPTTerName VARCHAR, 
             fraTest VARCHAR, 
             fraTestStatus VARCHAR, 
-            fraBall100 VARCHAR, 
-            fraBall12 VARCHAR, 
+            fraBall100 FLOAT, 
+            fraBall12 INT, 
             fraDPALevel VARCHAR, 
             fraBall VARCHAR, 
             fraPTName VARCHAR, 
@@ -226,8 +203,8 @@ def create_table():
             fraPTTerName VARCHAR, 
             deuTest VARCHAR, 
             deuTestStatus VARCHAR, 
-            deuBall100 VARCHAR, 
-            deuBall12 VARCHAR, 
+            deuBall100 FLOAT, 
+            deuBall12 INT, 
             deuDPALevel VARCHAR, 
             deuBall VARCHAR, 
             deuPTName VARCHAR, 
@@ -236,8 +213,8 @@ def create_table():
             deuPTTerName VARCHAR, 
             spaTest VARCHAR, 
             spaTestStatus VARCHAR, 
-            spaBall100 VARCHAR, 
-            spaBall12 VARCHAR, 
+            spaBall100 FLOAT, 
+            spaBall12 INT, 
             spaDPALevel VARCHAR, 
             spaBall VARCHAR, 
             spaPTName VARCHAR, 
@@ -252,28 +229,93 @@ def create_table():
     cursor.execute(query)
     conn.commit()
 
-@reconnect_after_connection_loss
+    query = """
+        CREATE TABLE IF NOT EXISTS breakpoint(
+            breakpoint INT,
+            year INT
+        );
+    """
+
+    cursor.execute(query)
+    conn.commit()
+
+    query = """
+        CREATE TABLE IF NOT EXISTS inserted (
+            inserted BOOL,
+            year INT
+        );
+    """
+
+    cursor.execute(query)
+    conn.commit()
+
+def insert_breakpoint():
+    global cursor, conn
+
+    cursor.execute("SELECT year FROM breakpoint WHERE year=2019;")
+    res = cursor.fetchone()
+
+    if res == None:
+        cursor.execute("INSERT INTO breakpoint(breakpoint, year) VALUES(0, 2019);")
+        conn.commit()
+
+    cursor.execute("SELECT year FROM breakpoint WHERE year=2020;")
+    res = cursor.fetchone()
+
+    if res == None:
+        cursor.execute("INSERT INTO breakpoint(breakpoint, year) VALUES(0, 2020);")
+        conn.commit()
+
+def create_inserted():
+    global cursor, conn
+
+    cursor.execute("SELECT year FROM inserted WHERE year=2019;")
+    res = cursor.fetchone()
+
+    if res == None:
+        cursor.execute("INSERT INTO inserted(inserted, year) VALUES(false, 2019);")
+        conn.commit()
+
+    cursor.execute("SELECT year FROM inserted WHERE year=2020;")
+    res = cursor.fetchone()
+
+    if res == None:
+        cursor.execute("INSERT INTO inserted(inserted, year) VALUES(false, 2020);")
+        conn.commit()  
+
 def populate_table(zno_file, year):
     global conn, cursor
 
     with open(zno_file) as csv_file:
         csv_reader = csv.DictReader(csv_file, delimiter=";")
 
+        brkpoint = get_breakpoint(year)
+
+        i = 0
+
         for row in csv_reader:
+            if i <= brkpoint:
+                i += 1
+                continue
+
             query = create_insert_query(row)
 
-            if row["mathBall100"] == 'null':
-                row["mathBall100"] = -1.0
-            else:
-                row["mathBall100"] = float(row["mathBall100"].replace(",", "."))
+            replace_commas(row)
+            replace_nulls(row)
 
             values = row
             values["year"] = year
 
             cursor.execute(query, values)
 
+            if i % 1000 == 0:
+                set_breakpoint(i, year)
+                conn.commit() 
+
+            i += 1
+
+        cursor.execute("UPDATE inserted SET inserted=true WHERE year=%(year)s;", {"year": year}) 
         conn.commit()
-        zno_files_inserted[year] = True
 
 def create_insert_query(row):
     table_name = get_env_var("table")
@@ -293,6 +335,70 @@ def create_insert_query(row):
     query = f"INSERT INTO {table_name}({columns}) VALUES({placeholders})"
 
     return query
+
+def replace_commas(row):
+    subjects = [
+        "UkrBall100",
+        "histBall100",
+        "mathBall100",
+        "physBall100",
+        "chemBall100",
+        "bioBall100",
+        "geoBall100",
+        "engBall100",
+        "fraBall100",
+        "deuBall100",
+        "spaBall100",
+    ]
+
+    for subject in subjects:
+        if row[subject] != "null":
+            row[subject] = float(row[subject].replace(",", "."))
+        else:
+            row[subject] = None
+
+def replace_nulls(row):
+    subjects = [
+        "UkrBall12",
+        "UkrBall",
+        "histBall12",
+        "histBall",
+        "mathBall12",
+        "mathBall",
+        "physBall12",
+        "physBall",
+        "chemBall12",
+        "chemBall",
+        "bioBall12",
+        "bioBall",
+        "geoBall12",
+        "geoBall",
+        "engBall12",
+        "fraBall12",
+        "deuBall12",
+        "spaBall12"
+    ]
+
+    for subject in subjects:
+        if row[subject] == "null":
+            row[subject] = None
+
+def get_breakpoint(year):
+    global cursor
+
+    cursor.execute(f"SELECT breakpoint FROM breakpoint WHERE year={year};")
+    brkpoint = cursor.fetchone()
+
+    brkpoint = brkpoint[0]
+
+    res = brkpoint - brkpoint % 1000 
+
+    return res
+
+def set_breakpoint(line, year):
+    global conn, cursor
+
+    cursor.execute("UPDATE breakpoint SET breakpoint=%(line)s WHERE year=%(year)s;", {"line": line, "year": year})
 
 def make_query():
     conn = psycopg2.connect(
