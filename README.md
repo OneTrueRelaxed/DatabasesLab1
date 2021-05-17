@@ -57,7 +57,7 @@ docker-compose -f migration.yaml up
 
 <h3>Таблиці, які будуть створені в результаті міграцій</h3>
 <ol>
-  <li>![image](physical.png "Фізична")</li>
-  <li>![image](logical.png "Логічна")</li>
+  <li>![image alt](physical.png "Фізична")</li>
+  <li>![image alt](logical.png "Логічна")</li>
 </ol>
 
