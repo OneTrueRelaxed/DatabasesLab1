@@ -62,6 +62,7 @@ docker-compose -f migration.yaml up
 <p><img src="logical.png"/></p>
 
 <h3>Логи міграції з пустої бази даних</h3>
+
 ```
 Starting lab1_flyway_1 ... done
 Attaching to lab1_flyway_1
@@ -83,4 +84,7 @@ flyway_1  | Migrating schema "public" to version "10 - filling discipline"
 flyway_1  | Successfully applied 10 migrations to schema "public", now at version v10 (execution time 00:01.672s)
 lab1_flyway_1 exited with code 0
 ```
+<h3>Логи міграції з наповненої бази даних</h3>
 
+```
+```
