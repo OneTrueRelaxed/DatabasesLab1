@@ -20,9 +20,7 @@
 docker-compose up
 ```
 
-Далі запуск відрізняється залежно від системи
-
-GNU/Linux Для того щоб запустити:
+Далі запуск відрізняється залежно від системи. GNU/Linux Для того щоб запустити:
 ```
 python3 -m pip install virtualenv
 python3 -m venv env
