@@ -49,9 +49,11 @@ python main.py
 
 <h2>Лабораторна робота №2 студента групи КМ-81 Волинця Сергія</h2>
 <h3>Запуск</h3>
+
 ```
 docker-compose up
-docker-compose -f migrate.yml up
+docker-compose -f migration.yaml up
 ```
+
 ![image](physical.png)
 
