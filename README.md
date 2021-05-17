@@ -87,4 +87,43 @@ lab1_flyway_1 exited with code 0
 <h3>Логи міграції з наповненої бази даних</h3>
 
 ```
+Starting lab1_flyway_1 ... done
+Attaching to lab1_flyway_1
+flyway_1  | Flyway Community Edition 7.8.2 by Redgate
+flyway_1  | Database: jdbc:postgresql://db:5432/postgres (PostgreSQL 13.0)
+flyway_1  | Successfully validated 10 migrations (execution time 00:00.049s)
+flyway_1  | Creating Schema History table "public"."flyway_schema_history" with baseline ...
+flyway_1  | 1 rows affected
+flyway_1  | Successfully baselined schema with version: 1
+flyway_1  | Current version of schema "public": 1
+flyway_1  | Migrating schema "public" to version "2 - area table"
+flyway_1  | Migrating schema "public" to version "3 - school table"
+flyway_1  | Migrating schema "public" to version "4 - student table"
+flyway_1  | Migrating schema "public" to version "5 - discipline table"
+flyway_1  | Migrating schema "public" to version "6 - unqie indexes"
+flyway_1  | Migrating schema "public" to version "7 - filling area"
+flyway_1  | 1860 rows affected
+flyway_1  | 215 rows affected
+flyway_1  | Migrating schema "public" to version "8 - filling school"
+flyway_1  | 4020 rows affected
+flyway_1  | 660 rows affected
+flyway_1  | 28 rows affected
+flyway_1  | 3 rows affected
+flyway_1  | 5 rows affected
+flyway_1  | Migrating schema "public" to version "9 - filling student"
+flyway_1  | 8000 rows affected
+flyway_1  | Migrating schema "public" to version "10 - filling discipline"
+flyway_1  | 7901 rows affected
+flyway_1  | 5220 rows affected
+flyway_1  | 3633 rows affected
+flyway_1  | 548 rows affected
+flyway_1  | 360 rows affected
+flyway_1  | 1727 rows affected
+flyway_1  | 1841 rows affected
+flyway_1  | 2200 rows affected
+flyway_1  | 12 rows affected
+flyway_1  | 61 rows affected
+flyway_1  | 2 rows affected
+flyway_1  | Successfully applied 9 migrations to schema "public", now at version v10 (execution time 00:07.062s)
+lab1_flyway_1 exited with code 0
 ```
