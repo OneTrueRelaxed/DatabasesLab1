@@ -15,17 +15,20 @@
 
 <h3>Запуск програми</h3>
 <p>Для всіх варіантів ОС треба виконати:</p>
-
+```
 docker-compose up
+```
 Далі запуск відрізняється залежно від системи
 
-GNU/Linux Для того щоб запустити
+GNU/Linux Для того щоб запустити:
+```
 python3 -m pip install virtualenv
 python3 -m venv env
 source env/bin/activate
 source .env
 python3 -m pip install -r requirements.txt
 python3 main.py
+````
 
 Windows OS Треба послідовно виконати наступні дії в окремому терміналі
 python -m pip install --user virtualenv
