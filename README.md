@@ -28,7 +28,7 @@ source env/bin/activate
 source .env
 python3 -m pip install -r requirements.txt
 python3 main.py
-````
+```
 
 Windows OS Треба послідовно виконати наступні дії в окремому терміналі
 python -m pip install --user virtualenv
