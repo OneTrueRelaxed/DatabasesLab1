@@ -32,13 +32,15 @@ python3 -m pip install -r requirements.txt
 python3 main.py
 ```
 
-Windows OS Треба послідовно виконати наступні дії в окремому терміналі
+Windows OS Треба послідовно виконати наступні дії в окремому терміналі:
+```
 python -m pip install --user virtualenv
 pyython -m venv env
 .\env\Scripts\activate
 python -m pip install -r requirements.txt
 source .env
 python main.py
+```
 python це execute команда python3, можливо у вас вона відрізняється
 
 Також можливо, що у Вас замість python може бути команда py. За більш детальною
